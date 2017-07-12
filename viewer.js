@@ -36,15 +36,15 @@ function Init()
 
 function Hide()
 {
-    context.fillStyle = 'grey';
+    context.fillStyle = 'black';
     context.fillRect(0, 0, display.width, display.height);
-    context.fillStyle = 'green';
+    context.fillStyle = '#ff4b39';
     context.fillRect(Exit.y * blocksize,Exit.x * blocksize, blocksize, blocksize);
 }
 
 function DrawExit(x, y)
 {
-	context.fillStyle = 'green';
+	context.fillStyle = '#ff4b39';
     context.fillRect(x, y, blocksize, blocksize);
 }
 
