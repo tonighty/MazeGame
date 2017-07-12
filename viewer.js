@@ -1,58 +1,56 @@
+createMaze();
+
 var display = document.getElementById('display');
-var blocknumber = 51;
-var curBlockX, curBlockY;
+var radius = 4;
 
 
 display.width = 0.9 * Math.min(document.documentElement.clientWidth, document.documentElement.clientHeight);
 display.height = display.width;
 
 playerY = playerX = display.width / 2;
-curBlockY = curBlockX = 25;
 
 var context = display.getContext('2d');
 
 Hide();
 
-var blocksize = display.width / blocknumber;
+var blocksize = display.width / MAZE_SIZE;
 
-var matrix = new Array(blocknumber);
-for (var i = 0; i < blocknumber; i++)
-{
-    matrix[i] = new Array(blocknumber);
-}
-
-for (var i = 0; i < blocknumber; i++)
-{
-    for (var j = 0; j < blocknumber; j++)
-    {
-    	matrix[i][j] = getRandomInRange(0, 1);
-    }
-}
-
-for (var i = 0; i < blocknumber; i++)
-{
-    for (var j = 0; j < blocknumber; j++)
-    {
-        if (matrix[i][j] == 1)
-            DrawWall(i * blocksize, j * blocksize);
-    }
-}
+Init();
 
 DrawPlayer();
-Hide();
-DrawRadius();
-DrawPlayer();
+setInterval('Update()', 16);
+setInterval('Player.x++; Player.y++', 1000);
+
+function Init()
+{
+    for (var i = 0; i < MAZE_SIZE; i++)
+    {
+        for (var j = 0; j < MAZE_SIZE; j++)
+        {
+            if (Maze[i][j] == EMPTY)
+                DrawEmpty(i * blocksize, j * blocksize);
+            if (Maze[i][j] == EXIT)
+            	DrawExit(i * blocksize, j * blocksize);
+        }
+    }
+}
 
 function Hide()
 {
-    context.fillStyle = 'black';
+    context.fillStyle = 'grey';
     context.fillRect(0, 0, display.width, display.height);
+}
+
+function DrawExit(x, y)
+{
+	context.fillStyle = 'green';
+    context.fillRect(x, y, blocksize, blocksize);
 }
 
 function DrawPlayer()
 {
     context.beginPath();
-    context.arc(display.width / 2, display.height / 2, blocksize * 0.35, 0, 2 * Math.PI, false);
+    context.arc(Player.x * blocksize + 0.5 * blocksize, Player.y * blocksize + 0.5 * blocksize, blocksize * 0.35, 0, 2 * Math.PI, false);
     context.fillStyle = '#ff4b39';
     context.fill();
     context.lineWidth = 1;
@@ -60,7 +58,7 @@ function DrawPlayer()
     context.stroke();
 }
 
-function DrawWall(x, y)
+function DrawEmpty(x, y)
 {
     context.fillStyle = 'white';
     context.fillRect(x, y, blocksize, blocksize);
@@ -68,17 +66,25 @@ function DrawWall(x, y)
 
 function DrawRadius()
 {
-    for (var i = curBlockX - 4; i < curBlockX + 4; i++)
+    for (var i = Player.x - radius; i < Player.x + radius; i++)
     {
-        for (var j = curBlockY - 4; j < curBlockY + 4; j++)
+        for (var j = Player.y - radius; j < Player.y + radius; j++)
         {
-            if (matrix[i][j] == 1)
-                DrawWall(i * blocksize, j * blocksize);
+        	if (i < 0 || j < 0 || i > MAZE_SIZE - 1 || j > MAZE_SIZE - 1) continue;
+            if (Maze[i][j] == 0)
+                DrawEmpty(i * blocksize, j * blocksize);
         }
     }
 
 }
 
-function getRandomInRange(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+function getRandomInRange(min, max)
+{
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function Update () {
+	Hide();
+	DrawRadius();
+	DrawPlayer();
 }
