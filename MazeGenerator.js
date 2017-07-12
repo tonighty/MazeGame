@@ -5,7 +5,8 @@ var EMPTY = 0,
     PATH = 4, ///???
     MAZE_SIZE = 51, //сторона лабиринта 200    
     Player = {},
-    Maze = new Array(MAZE_SIZE);
+    Maze = new Array(MAZE_SIZE),
+    Exit = {};
 
 function createMaze()
 {
@@ -66,6 +67,8 @@ function createMaze()
         }
     }
     Maze[c.y][c.x] = EXIT;
+    Exit.x = c.x;
+    Exit.y = c.y;
     for (i = 0; i < MAZE_SIZE; ++i)
     {
         Maze[i][0] = WALL;
