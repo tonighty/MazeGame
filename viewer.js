@@ -18,7 +18,7 @@ var blocksize = display.width / MAZE_SIZE;
 Init();
 DrawPlayer();
 
-setInterval('Update()', 16);
+setTimeout('setInterval(\'Update()\', 16);', 10000)
 
 function Init()
 {
