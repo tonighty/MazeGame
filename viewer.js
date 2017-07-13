@@ -40,7 +40,7 @@ function Hide()
 function DrawExit(x, y)
 {
     context.fillStyle = '#ff4b39';
-    context.fillRect(Exit.y * blocksize, Exit.x * blocksize, blocksize, blocksize);
+    context.fillRect(Exit.x * blocksize, Exit.y * blocksize, blocksize, blocksize);
 }
 
 function DrawPlayer()
