@@ -10,77 +10,100 @@ var EMPTY = 0,
 
 function createMaze()
 {
-    var i, j;
-    for (i = 0; i < MAZE_SIZE; ++i)
+    var iterations = MAZE_SIZE * MAZE_SIZE;
+
+    var moves = [];
+    for (var i = 0; i < MAZE_SIZE; i++)
     {
-        Maze[i] = new Array(MAZE_SIZE);
-        for (j = 0; j < MAZE_SIZE; ++j)
-            Maze[i][j] = (Math.random() * 100 < 40) ? (WALL) : (EMPTY);
-    }
-    var c = {},
-        last = {};
-    c.x = parseInt(MAZE_SIZE * (10 + Math.random())) % parseInt(MAZE_SIZE / 4) + 1; ///???
-    c.y = 1;
-    Player.x = c.x;
-    Player.y = c.y;
-    Maze[c.y][c.x] = PATH;
-    while (!(c.x == MAZE_SIZE - 2 && c.y == 1) &&
-        !(c.x == MAZE_SIZE - 2 && c.y >= (MAZE_SIZE * 3 / 4)) &&
-        !(c.y == MAZE_SIZE - 2 && c.x >= (MAZE_SIZE * 3 / 4)))
-    { ///add left???
-        last.x = c.x;
-        last.y = c.y;
-        while (c.x + 1 < MAZE_SIZE - 1 && Maze[c.y][c.x + 1] == EMPTY)
+        Maze[i] = [];
+        for (var j = 0; j < MAZE_SIZE; j++)
         {
-            ++c.x;
-            Maze[c.y][c.x] = PATH;
-        }
-        if (c.y + 1 < MAZE_SIZE - 1 && Maze[c.y + 1][c.x] == EMPTY)
-            while (c.y + 1 < MAZE_SIZE - 1 && Maze[c.y + 1][c.x] == EMPTY)
-            {
-                ++c.y;
-                Maze[c.y][c.x] = PATH;
-            }
-        else
-            while (c.y - 1 > 0 && Maze[c.y - 1][c.x] == EMPTY)
-            {
-                --c.y;
-                Maze[c.y][c.x] = PATH;
-            }
-        if (last.x == c.x && last.y == c.y)
-        { ///cut walls
-            if (c.x + 1 < MAZE_SIZE - 1 && Maze[c.y][c.x + 1] == WALL)
-            {
-                Maze[c.y][c.x + 1] = EMPTY;
-                continue;
-            }
-            if (c.y + 1 < MAZE_SIZE - 1 && Maze[c.y + 1][c.x] == WALL)
-            {
-                Maze[c.y + 1][c.x] = EMPTY;
-                continue;
-            }
-            if (c.y - 1 > 0 && Maze[c.y - 1][c.x] == WALL)
-            {
-                Maze[c.y - 1][c.x] = EMPTY;
-                continue;
-            }
+            Maze[i][j] = 1;
         }
     }
-    Maze[c.y][c.x] = EXIT;
-    Exit.x = c.x;
-    Exit.y = c.y;
-    for (i = 0; i < MAZE_SIZE; ++i)
+    var posX = 1;
+    var posY = 1;
+    Maze[posX][posY] = 0;
+    moves.push(posY + posY * MAZE_SIZE);
+    for (var itr = 0; itr < iterations; ++itr)
     {
-        Maze[i][0] = WALL;
-        Maze[i][MAZE_SIZE - 1] = WALL;
+        if (moves.length)
+        {
+            var possibleDirections = "";
+            if (posX + 2 > 0 && posX + 2 < MAZE_SIZE - 1 && Maze[posX + 2][posY] == 1)
+            {
+                possibleDirections += "S";
+            }
+            if (posX - 2 > 0 && posX - 2 < MAZE_SIZE - 1 && Maze[posX - 2][posY] == 1)
+            {
+                possibleDirections += "N";
+            }
+            if (posY - 2 > 0 && posY - 2 < MAZE_SIZE - 1 && Maze[posX][posY - 2] == 1)
+            {
+                possibleDirections += "W";
+            }
+            if (posY + 2 > 0 && posY + 2 < MAZE_SIZE - 1 && Maze[posX][posY + 2] == 1)
+            {
+                possibleDirections += "E";
+            }
+            if (possibleDirections)
+            {
+                var move = Math.floor(Math.random() * (possibleDirections.length + 1));
+                switch (possibleDirections[move])
+                {
+                    case "N":
+                        Maze[posX - 2][posY] = 0;
+                        Maze[posX - 1][posY] = 0;
+                        posX -= 2;
+                        break;
+                    case "S":
+                        Maze[posX + 2][posY] = 0;
+                        Maze[posX + 1][posY] = 0;
+                        posX += 2;
+                        break;
+                    case "W":
+                        Maze[posX][posY - 2] = 0;
+                        Maze[posX][posY - 1] = 0;
+                        posY -= 2;
+                        break;
+                    case "E":
+                        Maze[posX][posY + 2] = 0;
+                        Maze[posX][posY + 1] = 0;
+                        posY += 2;
+                        break;
+                }
+                moves.push(posY + posX * MAZE_SIZE);
+            }
+            else
+            {
+                var back = moves.pop();
+                posX = Math.floor(back / MAZE_SIZE);
+                posY = back % MAZE_SIZE;
+            }
+        }
     }
-    for (j = 0; j < MAZE_SIZE; ++j)
+    while (true)
     {
-        Maze[0][j] = WALL;
-        Maze[MAZE_SIZE - 1][j] = WALL;
+        var i = getRandomInRange(0, MAZE_SIZE - 1)
+        var j = getRandomInRange(0, MAZE_SIZE - 1)
+        if (Maze[i][j] == 0)
+        {
+            Player.x = i;
+            Player.y = j;
+            break;
+        }
     }
-    for (i = 1; i < MAZE_SIZE - 1; ++i)
-        for (j = 1; j < MAZE_SIZE - 1; ++j)
-            if (Maze[i][j] == PATH)
-                Maze[i][j] = EMPTY;
+    while (true)
+    {
+        var i = getRandomInRange(0, MAZE_SIZE - 1)
+        var j = getRandomInRange(0, MAZE_SIZE - 1)
+        if (Maze[i][j] == 0)
+        {
+            Exit.x = i;
+            Exit.y = j;
+            Maze[i][j] = EXIT;
+            break;
+        }
+    }
+    return Maze;
 }

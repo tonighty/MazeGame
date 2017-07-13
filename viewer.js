@@ -28,7 +28,7 @@ function Init()
         {
             if (Maze[i][j] == EMPTY)
                 DrawEmpty(i * blocksize, j * blocksize);
-            if (Maze[i][j] == EXIT)
+            if (Exit.x == i && Exit.y == j)
             	DrawExit(i * blocksize, j * blocksize);
         }
     }
@@ -39,7 +39,7 @@ function Hide()
     context.fillStyle = 'black';
     context.fillRect(0, 0, display.width, display.height);
     context.fillStyle = '#ff4b39';
-    context.fillRect(Exit.y * blocksize,Exit.x * blocksize, blocksize, blocksize);
+    context.fillRect(Exit.x * blocksize,Exit.y * blocksize, blocksize, blocksize);
 }
 
 function DrawExit(x, y)
@@ -74,7 +74,7 @@ function DrawRadius()
         	if (i < 0 || j < 0 || i > MAZE_SIZE - 1 || j > MAZE_SIZE - 1) continue;
             if (Maze[i][j] == 0)
                 DrawEmpty(i * blocksize, j * blocksize);
-            if (Maze[i][j] == EXIT)
+            if (Exit.x == i && Exit.y == j)
             	DrawExit(i * blocksize, j * blocksize);
         }
     }
