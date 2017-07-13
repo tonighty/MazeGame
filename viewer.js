@@ -126,4 +126,12 @@ function Update()
     DrawExit();
     //drawMaze();
     DrawPlayer();
+    for (var i = 0; i < CELL_SIZE; i++)
+      {
+        if (Trap[i].x == Player.y && Trap[i].y == Player.x && Trap[i].action)
+        {
+          alert('nu ti loh');
+          reset();
+        }
+      }
 }

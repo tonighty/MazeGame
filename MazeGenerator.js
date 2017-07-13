@@ -2,10 +2,12 @@ var EMPTY = 0,
     WALL = 1,
     USED = 2,
     EXIT = 3,
+    TRAP_ON = 4,///???
+    TRAP_OFF = 5,///???
     MAZE_SIZE = 51,
     CELL_SIZE = ((MAZE_SIZE - 1) / 2),
-    CYCLE_NUM = parseInt(MAZE_SIZE / 10),
-    MIN_DIF = parseInt(MAZE_SIZE / 3),
+    CYCLE_NUM = parseInt(MAZE_SIZE / 7),
+    MIN_DIF = parseInt(MAZE_SIZE / 2),
     Player = {},
     random_k = 65535,
     Maze = new Array(MAZE_SIZE),
@@ -26,14 +28,19 @@ function addCycles() {///TEST
 }
 
 function addTraps() {
-    for (var i = 0; i < CELL_SIZE; ++i) {
+    var i, x, y;
+    for (i = 0; i < CELL_SIZE; ++i) {
         Trap[i] = {};
-        Trap[i].x = 2 * (parseInt(Math.random() * random_k) % CELL_SIZE) + 1;
-        Trap[i].y = 2 * (parseInt(Math.random() * random_k) % CELL_SIZE) + 1;
-        if (Trap[i].x == Player.x && Trap[i].y == Player.y || Maze[Trap[i].y][Trap[i].x] == EXIT)
-            Trap[i].action = false;
-        else
-            Trap[i].action = true;
+        do {
+            x = Math.floor(Math.random() * MAZE_SIZE);
+            y = Math.floor(Math.random() * MAZE_SIZE);
+        } while (Maze[y][x] != EMPTY || Player.x == x && Player.y == y);
+        //while (Player.x == x && Player.y == y || !(i && j && i < MAZE_SIZE - 1 && j < MAZE_SIZE - 1))???
+        Trap[i].x = x;
+        Trap[i].y = y;
+        Trap[i].action = (Math.floor(Math.random() * MAZE_SIZE) % 2) ? (false) : (true);/*
+        Maze[y][x] = (Math.floor(Math.random() * MAZE_SIZE) % 2) ? (TRAP_OFF) : (TRAP_ON);
+        setInterval(function () { Maze[y][x] = (Maze[y][x] == TRAP_ON) ? (TRAP_OFF) : (TRAP_ON) }, 3000);///???*/
     }
 }
 
@@ -60,10 +67,10 @@ function setSE() {
 
 function createMaze() {
     var LEFT = 0,
-      RIGHT = 1,
-      UP = 2,
-      DOWN = 3,
-      i, j;
+        RIGHT = 1,
+        UP = 2,
+        DOWN = 3,
+        i, j;
     for (i = 0; i < MAZE_SIZE; ++i) {
         Maze[i] = new Array(MAZE_SIZE);
         for (j = 0; j < MAZE_SIZE; ++j)
@@ -73,19 +80,10 @@ function createMaze() {
                 Maze[i][j] = WALL;
     }
     Maze[1][1] = USED;
-    var cell_num = CELL_SIZE * CELL_SIZE - 1,
-      Neighboor = new Array(4),
-      n_num, rand_n,
-      S = [],
-      cur_cell = {
-          x: 1,
-          y: 1,
-          l: 0,
-          r: 0,
-          u: 0,
-          d: 0
-      },
-      tmp_cell = new Object();
+    var cell_num = CELL_SIZE * CELL_SIZE - 1, Neighboor = new Array(4), n_num, rand_n,
+        S = [],
+        cur_cell = { x: 1, y: 1, l: 0, r: 0, u: 0, d: 0 },
+        tmp_cell = new Object();
     for (i in cur_cell)
         tmp_cell[i] = cur_cell[i];
     //cur_cell.l=cur_cell.r=cur_cell.u=cur_cell.d=0;
@@ -184,4 +182,15 @@ function createMaze() {
           if (parseInt(Math.random() * random_k) % 100 < 10 &&
               i > 0 && j > 0 && i < MAZE_SIZE - 1 && j < MAZE_SIZE - 1)
         Maze[2 * i][2 * j] = EMPTY;
+}*/
+/*function addTraps() {
+    for (var i = 0; i < CELL_SIZE; ++i) {
+        Trap[i] = {};
+        Trap[i].x = 2 * (parseInt(Math.random() * random_k) % CELL_SIZE) + 1;
+        Trap[i].y = 2 * (parseInt(Math.random() * random_k) % CELL_SIZE) + 1;
+        if (Trap[i].x == Player.x && Trap[i].y == Player.y || Maze[Trap[i].y][Trap[i].x] == EXIT)
+            Trap[i].action = false;
+        else
+            Trap[i].action = true;
+    }
 }*/
