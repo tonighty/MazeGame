@@ -77,10 +77,9 @@
     start();
 
     function Update() {
-      // Hide();
-      // DrawRadius();
-      // DrawExit();
-      drawMaze();
+      Hide();
+      DrawRadius();
+      DrawExit();
       DrawPlayer();
       for (var i = 0; i < numBots; i++)
         if (Bots[i].y == Player.y && Bots[i].x == Player.x) {
