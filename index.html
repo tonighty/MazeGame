@@ -45,39 +45,29 @@
   <script type="text/javascript" src="MazeGenerator.js"></script>
   <script type="text/javascript" src="viewer.js"></script>
   <script type="text/javascript" src="timer.js"></script>
+  <script type="text/javascript" src="controller.js"></script>
   <script type="text/javascript" src="AI.js"></script>
   <script type="text/javascript">
-    // var nickname;
-
-    function SwitchTrapCondition () {
-      for (var i = 0; i < CELL_SIZE; i++)
-        if (Trap[i].action)
-          Trap[i].action = false;
-        else Trap[i].action = true;
-    }
-
     function start() {
       lastResults.style.height = display.height + "px";
       records.style.height = display.height + "px";
-      // while (!nickname)
-      //   nickname = prompt("Write nickname:");
       lastResults.innerHTML = "Last results:<br>" + lastResults.innerHTML;
       createMaze();
       findShortestPath();
       createBots(5);
       setInterval('Update()', 16);
       setInterval('SwitchTrapCondition()', 1000);
+      setInterval('botsMove()', 500);
       findTIME();
     }
 
-    function reset() {
-      if (time < bestTime) {
+    function reset(win) {
+      if (time < bestTime && win) {
         bestTime = time;
         bestResult.innerHTML = timer.innerHTML;
       }
-      findTIME();
-      alert('WIN');
-      findTIME();
+      findTIME(win);
+      findTIME(win);
       createMaze();
       findShortestPath();
       createBots(5);
@@ -86,67 +76,22 @@
     }
     start();
 
-    function mazeLeft(i, j) {
-      if ((Maze[i][j - 1] == 0) && (j > 1)) {
-        --Player.x;
-      }
-      if ((Maze[i][j - 1] == 3) && (j > 1)) {
-        --Player.x;
-        reset();
-      }
-    }
-
-    function mazeUp(i, j) {
-      if ((Maze[i - 1][j] == 0) && (i > 1)) {
-        --Player.y;
-      }
-      if ((Maze[i - 1][j] == 3) && (j > 1)) {
-        --Player.y;
-        reset();
-      }
-    }
-
-    function mazeRight(i, j) {
-      if ((Maze[i][j + 1] == 0) && (j < 198)) {
-        ++Player.x;
-      }
-      if ((Maze[i][j + 1] == 3) && (j < 198)) {
-        ++Player.x;
-        reset();
-
-      }
-    }
-
-    function mazeDown(i, j) {
-      if ((Maze[i + 1][j] == 0) && (i < 198)) {
-        ++Player.y;
-      }
-      if ((Maze[i + 1][j] == 3) && (j < 198)) {
-        ++Player.y;
-        reset();
-      }
-    }
-    var Exit = {};
-    for (var i = 0; i < MAZE_SIZE; i++)
-      for (var j = 0; j < MAZE_SIZE; j++)
-        if (Maze[i][j] == EXIT) {
-          Exit.x = i;
-          Exit.y = j;
+    function Update() {
+      // Hide();
+      // DrawRadius();
+      // DrawExit();
+      drawMaze();
+      DrawPlayer();
+      for (var i = 0; i < numBots; i++)
+        if (Bots[i].y == Player.y && Bots[i].x == Player.x) {
+          alert('LOSE');
+          reset(0);
         }
-
-    function klava(n) {
-      // alert(ShortPath[Player.y * MAZE_SIZE + Player.x][Exit.y * MAZE_SIZE + Exit.x])
-      if ((n == 37) || (n == 65)) {
-        mazeUp(Player.y, Player.x);
-      }
-      if ((n == 38) || (n == 87)) {
-        mazeLeft(Player.y, Player.x);
-      }
-      if ((n == 39) || (n == 68)) {
-        mazeDown(Player.y, Player.x);
-      }
-      if ((n == 40) || (n == 83)) {
-        mazeRight(Player.y, Player.x);
+      for (var i = 0; i < CELL_SIZE; i++) {
+        if (Trap[i].action && Trap[i].x == Player.y && Trap[i].y == Player.x) {
+          alert('LOSE');
+          reset(0);
+        }
       }
     }
   </script>
