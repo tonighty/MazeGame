@@ -83,7 +83,8 @@ function findShortestPath() {
     }
 
 }
-function createBots(num){
+
+function createBots(num) {
   numBots = num;
   Bots = new Array(numBots);
   for (var i = 0; i < numBots; i++) {
@@ -94,7 +95,71 @@ function createBots(num){
       t2 = Math.floor(Math.random() * MAZE_SIZE);
     }
     Bots[i] = {};
+    Bots[i].num = 0;
+    Bots[i].mod = 0;
     Bots[i].x = t2;
     Bots[i].y = t1;
   }
+}
+
+function botsMove() {
+  for (var i = 0; i < numBots; i++) {
+    if ((Math.sqrt(Math.pow(Bots[i].x - Player.x, 2) + Math.pow(Bots[i].y - Player.y, 2))) <= radius)
+      Bots[i].mod = Player.y * MAZE_SIZE + Player.x;
+    if (Bots[i].mod) {
+      var cur = Bots[i].y * MAZE_SIZE + Bots[i].x;
+      var r = ShortPath[cur][Bots[i].mod];
+      switch (r) {
+        case LEFT:
+          Bots[i].x--;
+          break;
+        case RIGHT:
+          Bots[i].x++;
+          break;
+        case UP:
+          Bots[i].y++;
+          break;
+        case DOWN:
+          Bots[i].y--;
+          break;
+        default:
+          alert("error!");
+      }
+      if (Bots[i].mod == cur)
+        Bots[i].mod = 0;
+    } else {
+      if (Bots[i].num != 0) {
+        Bots[i].num--;
+        if(changePos(i))
+          Bots[i].num=0;
+      } else {
+        while (true) {
+          Bots[i].lastmove = Math.floor(Math.random() * 4);
+          if (!changePos(i)) break;
+        }
+        Bots[i].num = Math.floor(Math.random() * 5);;
+      }
+    }
+  }
+}
+
+function changePos(i) {
+  var r = Bots[i].lastmove;
+  if (r == 0 && Maze[Bots[i].y + 1][Bots[i].x] != WALL) {
+    Bots[i].y++;
+    return 0;
+  }
+  if (r == 1 && Maze[Bots[i].y - 1][Bots[i].x] != WALL) {
+    Bots[i].y--;
+    return 0;
+  }
+  if (r == 2 && Maze[Bots[i].y][Bots[i].x + 1] != WALL) {
+    Bots[i].x++;
+    return 0;
+  }
+  if (r == 3 && Maze[Bots[i].y][Bots[i].x - 1] != WALL) {
+    Bots[i].x--;
+    return 0;
+  }
+  return 1;
 }

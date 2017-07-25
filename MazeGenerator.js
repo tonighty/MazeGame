@@ -4,14 +4,16 @@ var EMPTY = 0,
     EXIT = 3,
     TRAP_ON = 4,///???
     TRAP_OFF = 5,///???
-    MAZE_SIZE = 51,
-    CELL_SIZE = ((MAZE_SIZE - 1) / 2),
-    CYCLE_NUM = parseInt(MAZE_SIZE / 7),
-    MIN_DIF = parseInt(MAZE_SIZE / 2),
+    MAZE_SIZE = 50,
+    CELL_SIZE = (MAZE_SIZE / 2),
+    CYCLE_NUM = parseInt(MAZE_SIZE / 3),
+    MIN_DIF = parseInt((MAZE_SIZE - 2) / 2) - 1,
+    //parseInt(MAZE_SIZE * 9 / 24),
     Player = {},
     random_k = 65535,
     Maze = new Array(MAZE_SIZE),
     Trap = new Array(CELL_SIZE);
+    var Exit = {};
 
 function addCycles() {///TEST
     var i, j, k = 0;
@@ -19,7 +21,7 @@ function addCycles() {///TEST
         i = Math.floor(Math.random() * MAZE_SIZE);
         j = Math.floor(Math.random() * MAZE_SIZE);
         if (Maze[i][j] == WALL && i && j && i < MAZE_SIZE - 1 && j < MAZE_SIZE - 1 &&
-            (Maze[i - 1][j] == WALL && Maze[i + 1][j] == WALL && Maze[i][j - 1] != WALL && Maze[i][j + 1] != WALL||
+            (Maze[i - 1][j] == WALL && Maze[i + 1][j] == WALL && Maze[i][j - 1] != WALL && Maze[i][j + 1] != WALL ||
              Maze[i - 1][j] != WALL && Maze[i + 1][j] != WALL && Maze[i][j - 1] == WALL && Maze[i][j + 1] == WALL)) {
             Maze[i][j] = EMPTY;
             ++k;
@@ -34,11 +36,11 @@ function addTraps() {
         do {
             x = Math.floor(Math.random() * MAZE_SIZE);
             y = Math.floor(Math.random() * MAZE_SIZE);
-        } while (Maze[y][x] != EMPTY || Player.x == x && Player.y == y);
-        //while (Player.x == x && Player.y == y || !(i && j && i < MAZE_SIZE - 1 && j < MAZE_SIZE - 1))???
+        } while (Maze[x][y] != EMPTY || (Player.x == x && Player.y == y));
         Trap[i].x = x;
         Trap[i].y = y;
-        Trap[i].action = (Math.floor(Math.random() * MAZE_SIZE) % 2) ? (false) : (true);/*
+        Trap[i].action = (Math.floor(Math.random() * MAZE_SIZE) % 2) ? (false) : (true);
+        /*
         Maze[y][x] = (Math.floor(Math.random() * MAZE_SIZE) % 2) ? (TRAP_OFF) : (TRAP_ON);
         setInterval(function () { Maze[y][x] = (Maze[y][x] == TRAP_ON) ? (TRAP_OFF) : (TRAP_ON) }, 3000);///???*/
     }
@@ -65,6 +67,37 @@ function setSE() {
     Maze[i][j] = EXIT;
 }
 
+function countOffset(cell, side) {
+    var offset, LEFT = 0, RIGHT = 1, UP = 2, DOWN = 3;
+    switch (side) {///check out of range???
+        case LEFT:
+            if (cell.x == MAZE_SIZE - 2 && !(MAZE_SIZE % 2))
+                offset = -1;
+            else
+                offset = -2;
+            break;
+        case RIGHT:
+            if (cell.x == MAZE_SIZE - 3 && !(MAZE_SIZE % 2))
+                offset = 1;
+            else
+                offset = 2;
+            break;
+        case UP:
+            if (cell.y == MAZE_SIZE - 2 && !(MAZE_SIZE % 2))
+                offset = -1;
+            else
+                offset = -2;
+            break;
+        case DOWN:
+            if (cell.y == MAZE_SIZE - 3 && !(MAZE_SIZE % 2))
+                offset = 1;
+            else
+                offset = 2;
+            break;
+    }
+    return offset;
+}
+
 function createMaze() {
     var LEFT = 0,
         RIGHT = 1,
@@ -80,7 +113,7 @@ function createMaze() {
                 Maze[i][j] = WALL;
     }
     Maze[1][1] = USED;
-    var cell_num = CELL_SIZE * CELL_SIZE - 1, Neighboor = new Array(4), n_num, rand_n,
+    var cell_num = CELL_SIZE * CELL_SIZE - 1, offset, Neighboor = new Array(4), n_num, rand_n,
         S = [],
         cur_cell = { x: 1, y: 1, l: 0, r: 0, u: 0, d: 0 },
         tmp_cell = new Object();
@@ -95,9 +128,10 @@ function createMaze() {
             cur_cell[i] = tmp_cell[i];
         if (!(cur_cell.l && cur_cell.r && cur_cell.u && cur_cell.d)) {
             if (!cur_cell.l) {
-                if (cur_cell.x - 2 <= 0)
+                offset = countOffset(cur_cell, LEFT);
+                if (cur_cell.x + offset <= 0)
                     cur_cell.l = 1;
-                else if (cur_cell.x - 2 > 0 && Maze[cur_cell.y][cur_cell.x - 2] == USED)
+                else if (cur_cell.x + offset > 0 && Maze[cur_cell.y][cur_cell.x + offset] == USED)
                     cur_cell.l = 1;
                 else {
                     Neighboor[n_num] = LEFT;
@@ -105,9 +139,10 @@ function createMaze() {
                 }
             }
             if (!cur_cell.r) {
-                if (cur_cell.x + 2 >= MAZE_SIZE)
+                offset = countOffset(cur_cell, RIGHT);
+                if (cur_cell.x + offset >= MAZE_SIZE - 1)
                     cur_cell.r = 1;
-                else if (cur_cell.x + 2 < MAZE_SIZE - 1 && Maze[cur_cell.y][cur_cell.x + 2] == USED)
+                else if (cur_cell.x + offset < MAZE_SIZE - 1 && Maze[cur_cell.y][cur_cell.x + offset] == USED)
                     cur_cell.r = 1;
                 else {
                     Neighboor[n_num] = RIGHT;
@@ -115,9 +150,10 @@ function createMaze() {
                 }
             }
             if (!cur_cell.u) {
-                if (cur_cell.y - 2 <= 0)
+                offset = countOffset(cur_cell, UP);
+                if (cur_cell.y + offset <= 0)
                     cur_cell.u = 1;
-                else if (cur_cell.y - 2 > 0 && Maze[cur_cell.y - 2][cur_cell.x] == USED)
+                else if (cur_cell.y + offset > 0 && Maze[cur_cell.y + offset][cur_cell.x] == USED)
                     cur_cell.u = 1;
                 else {
                     Neighboor[n_num] = UP;
@@ -125,9 +161,10 @@ function createMaze() {
                 }
             }
             if (!cur_cell.d) {
-                if (cur_cell.y + 2 >= MAZE_SIZE)
+                offset = countOffset(cur_cell, DOWN);
+                if (cur_cell.y + offset >= MAZE_SIZE - 1)
                     cur_cell.d = 1;
-                else if (cur_cell.y + 2 < MAZE_SIZE - 1 && Maze[cur_cell.y + 2][cur_cell.x] == USED)
+                else if (cur_cell.y + offset < MAZE_SIZE - 1 && Maze[cur_cell.y + offset][cur_cell.x] == USED)
                     cur_cell.d = 1;
                 else {
                     Neighboor[n_num] = DOWN;
@@ -147,19 +184,19 @@ function createMaze() {
             switch (Neighboor[rand_n]) {
                 case LEFT:
                     Maze[cur_cell.y][cur_cell.x - 1] = EMPTY;
-                    cur_cell.x -= 2;
+                    cur_cell.x += countOffset(cur_cell, LEFT);
                     break;
                 case RIGHT:
                     Maze[cur_cell.y][cur_cell.x + 1] = EMPTY;
-                    cur_cell.x += 2;
+                    cur_cell.x += countOffset(cur_cell, RIGHT);
                     break;
                 case UP:
                     Maze[cur_cell.y - 1][cur_cell.x] = EMPTY;
-                    cur_cell.y -= 2;
+                    cur_cell.y += countOffset(cur_cell, UP);
                     break;
                 case DOWN:
                     Maze[cur_cell.y + 1][cur_cell.x] = EMPTY;
-                    cur_cell.y += 2;
+                    cur_cell.y += countOffset(cur_cell, DOWN);
                     break;
             }
             cur_cell.l = cur_cell.r = cur_cell.u = cur_cell.d = 0;
@@ -174,7 +211,14 @@ function createMaze() {
     addCycles();
     setSE();
     addTraps();
+    for (var i = 0; i < MAZE_SIZE; i++)
+      for (var j = 0; j < MAZE_SIZE; j++)
+        if (Maze[i][j] == EXIT) {
+          Exit.x = i;
+          Exit.y = j;
+        }
 }
+
 /*function addCycles() {
   var i, j;
   for (i = 1; i < MAZE_SIZE / 2; ++i)

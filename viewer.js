@@ -20,7 +20,7 @@ function drawMaze()
             if (Maze[i][j] == EMPTY)
                 DrawEmpty(i * blocksize, j * blocksize);
             if (Maze[i][j] == EXIT)
-                DrawExit(i * blocksize, j * blocksize);
+                DrawExit();
         }
     }
 
@@ -37,7 +37,7 @@ function Hide()
     context.fillRect(0, 0, display.width, display.height);
 }
 
-function DrawExit(x, y)
+function DrawExit()
 {
     context.fillStyle = '#ff4b39';
     context.fillRect(Exit.x * blocksize, Exit.y * blocksize, blocksize, blocksize);
@@ -117,21 +117,4 @@ function DrawTrap(x, y)
 function getRandomInRange(min, max)
 {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function Update()
-{
-    Hide();
-    DrawRadius();
-    DrawExit();
-    //drawMaze();
-    DrawPlayer();
-    for (var i = 0; i < CELL_SIZE; i++)
-      {
-        if (Trap[i].x == Player.y && Trap[i].y == Player.x && Trap[i].action)
-        {
-          alert('nu ti loh');
-          reset();
-        }
-      }
 }

@@ -28,12 +28,13 @@ t=time;
    clocktimer = setTimeout("startTIME()", 10);
  }
 
- function findTIME() {
+ function findTIME(win) {
    if (init == 0) {
      startDate = new Date();
      startTIME();
      init = 1;
    } else {
+     if(win)
      results.innerHTML = "<span>" + timer.innerHTML + "</span><br>"+results.innerHTML;
      resetTime();
    }
