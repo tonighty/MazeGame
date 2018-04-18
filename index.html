@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <title>viewer</title>
+  <title>Maze</title>
+  <meta name="description" content="MazeGame © mjr & co">
+  <link href="https://fonts.googleapis.com/css?family=Cabin+Sketch" rel="stylesheet">
   <style type="text/css">
     .parent {
       width: 100%;
@@ -24,8 +25,11 @@
     }
 
     body {
-      background: black;
-    }
+	  background: black;
+	  font-family: 'Cabin Sketch', cursive;
+	  font-size: 2rem;
+	}
+	
   </style>
 </head>
 
@@ -42,11 +46,11 @@
       <div>Your best Result:<br><span id="bestResult">0</span></div>
     </div>
   </div>
-  <script type="text/javascript" src="MazeGenerator.js"></script>
-  <script type="text/javascript" src="viewer.js"></script>
-  <script type="text/javascript" src="timer.js"></script>
-  <script type="text/javascript" src="controller.js"></script>
-  <script type="text/javascript" src="AI.js"></script>
+  <script type="text/javascript" src="scripts/MazeGenerator.js"></script>
+  <script type="text/javascript" src="scripts/viewer.js"></script>
+  <script type="text/javascript" src="scripts/timer.js"></script>
+  <script type="text/javascript" src="scripts/controller.js"></script>
+  <script type="text/javascript" src="scripts/AI.js"></script>
   <script type="text/javascript">
     function start() {
       lastResults.style.height = display.height + "px";
@@ -95,5 +99,4 @@
     }
   </script>
 </body>
-
 </html>
